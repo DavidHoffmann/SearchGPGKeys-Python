@@ -99,22 +99,26 @@ class SearchGPGKeys(object):
         self.__logging.info('__GetKeyForEmail() url: ' + url)
 
         # request
-        self.__browser.open(url)
-        response = self.__browser.response().read()
+        response = None
+        try:
+            self.__browser.open(url)
+            response = self.__browser.response().read()
+            self.__logging.debug(response)
 
-        self.__logging.debug(response)
+            # extract key
+            import re
+            regex = re.compile("-----BEGIN PGP PUBLIC KEY BLOCK-----(.*?)-----END PGP PUBLIC KEY BLOCK-----",re.DOTALL)
+            r = regex.search(response)        
 
-        # extract key
-        import re
-        regex = re.compile("-----BEGIN PGP PUBLIC KEY BLOCK-----(.*?)-----END PGP PUBLIC KEY BLOCK-----",re.DOTALL)
-        r = regex.search(response)        
+            if r:
+                return r.group(0)
+            else:
+                self.__logging.info('Key ' + address + ' not found')
+                return None
+        except:
+            pass
 
-        if r:
-            return r.group(0)
-        else:
-            self.__logging.info('Key ' + address + ' not found')
-            return None
-
+        return None
 
     def __SaveKey(self, address, outputDirectoryName, key):
         '''save key to file'''
