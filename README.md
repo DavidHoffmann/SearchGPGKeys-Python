@@ -5,12 +5,12 @@ Search GPG-Keys for emailadresses
 
 Requirements
 ------------
-Pytho 2.7
-Python module: mechanize
+* Python 2.7
+* Python module: mechanize
 
 Parameters
 ----------
--f FileWithEmailaddresses.txt
+-f FileWithEmailaddresses.txt   
 -d OutputDirectory
 
 Examples
