@@ -96,7 +96,7 @@ class SearchGPGKeys(object):
         encAddress = address.strip().replace('@', '%40')
 
         url = keyserverUrl + encAddress
-        self.__logging.info('__GetKeyForEmail() url: ' + url)
+        self.__logging.info('request url: ' + url)
 
         # request
         response = None
@@ -115,7 +115,8 @@ class SearchGPGKeys(object):
             else:
                 self.__logging.info('Key ' + address + ' not found')
                 return None
-        except:
+        except Exception as ex:
+            self.__logging.error("ERROR: " + str(ex))
             pass
 
         return None
@@ -133,7 +134,7 @@ class SearchGPGKeys(object):
         f.close()
 
 
-    def Search(self, adresses, outputDirectoryName):
+    def Search(self, addresses, outputDirectoryName):
         '''search the given keys at online keyservers'''
         import os.path
 
