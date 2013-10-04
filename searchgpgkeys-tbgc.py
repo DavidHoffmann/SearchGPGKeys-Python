@@ -92,6 +92,44 @@ class SearchGPGKeysTBGC(object):
         return emailaddresses
 
 
+    def RemoveTBABMailRules(self, contactsDirectoy, keysFound):
+        '''Remove encrypt rules for email addresses with gpg keys'''
+
+        import os, re
+        
+        # param check                                                                                                                                  
+        if contactsDirectory == None or contactsDirectory == '':
+            self.__logging.warn('contactsDirectory is empty')
+            return None
+
+        fileData = None
+        pgpRulesFile = None
+
+        # load pgrules.xml
+        # open file                                                       
+        try:
+            pgpRulesFile = os.path.join(os.path.join(os.path.join(contactsDirectory, '..'), '..'), 'pgprules.xml')
+            self.__logging.info("pgprules: " + pgpRulesFile)
+
+            # load pgpRules.xml
+            with open(pgpRulesFile, 'r') as f:
+                fileData = f.read()
+                f.close()
+        except:
+            self.__logging.error("can't open pgprules.xml file")
+            pass
+
+        # remove rule for mailadresses with keys
+        if fileData != None:
+            for kf in keysFound:
+                fileData = re.sub("<pgpRule email=\"{" + kf.strip() + "}\".*?/>\n", "", fileData)
+
+        # write pgpRules.xml
+        with open(pgpRulesFile, 'w') as f:
+            f.write(fileData)
+            f.close()
+
+
 if __name__ == '__main__':
     '''main for console'''
     import sys, getopt
@@ -123,6 +161,8 @@ if __name__ == '__main__':
 
     from searchgpgkeys import SearchGPGKeys
     searchGPGKeys = SearchGPGKeys(debug)
-    searchGPGKeys.Search(addresses, outDirectory)
+    keysFound = searchGPGKeys.Search(addresses, outDirectory)
 
+    if keysFound != None and len(keysFound) > 0:
+        searchGPGKeysTBGC.RemoveTBABMailRules(contactsDirectory, keysFound)
 

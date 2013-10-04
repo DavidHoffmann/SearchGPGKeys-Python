@@ -143,16 +143,31 @@ class SearchGPGKeys(object):
             self.__logging.warn('Search with no addresses')
             return
         
+        # found keys
+        keysFound = []
+
         # load keys for all addresses
+        cnt = 0
+
         for address in addresses:
+            self.__logging.info("count down: " + str(len(addresses)-cnt))
+
             key = self.__GetKeyForEmail(address)
 
             if key != None and key != '':
                 outputFilename = os.path.join(outputDirectoryName, address.strip().lower().replace('@', '_AT_') + '.asc')
+                
+                # add key to list with found keys
+                keysFound.append(address.strip())
+
                 if os.path.isfile(outputFilename):
                     self.__logging.info('key exists - ' + address.strip().lower())
                 else:
                     self.__SaveKey(address, outputDirectoryName, key)
+            
+            cnt = cnt + 1
+
+        return keysFound
         
     
     def LoadAddressFile(self, filename):
