@@ -97,12 +97,12 @@ class SearchGPGKeysTBGC(object):
 
         import os, re
         
-        # param check                                                                                                                                  
+        # param check
         if contactsDirectory == None or contactsDirectory == '':
             self.__logging.warn('contactsDirectory is empty')
             return None
 
-        fileData = None
+        Filedata = None
         pgpRulesFile = None
 
         # load pgrules.xml
@@ -128,6 +128,13 @@ class SearchGPGKeysTBGC(object):
         with open(pgpRulesFile, 'w') as f:
             f.write(fileData)
             f.close()
+
+
+    def ImportKeys(self, outDirectory):
+        import os, subprocess
+        cmd = 'gpg --import ' + os.path.join(outDirectory + '*.asc')
+        self.__logging.info ('command: ' + cmd)
+        subprocess.call(cmd, shell = True)
 
 
 if __name__ == '__main__':
@@ -164,5 +171,6 @@ if __name__ == '__main__':
     keysFound = searchGPGKeys.Search(addresses, outDirectory)
 
     if keysFound != None and len(keysFound) > 0:
+        searchGPGKeysTBGC.ImportKeys(outDirectory)
         searchGPGKeysTBGC.RemoveTBABMailRules(contactsDirectory, keysFound)
 
