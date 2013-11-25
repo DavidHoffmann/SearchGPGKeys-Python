@@ -71,7 +71,7 @@ class SearchGPGKeys(object):
 
 
     def __GetBrowser(self):
-        '''returns browser objectr'''
+        '''returns browser object'''
         import mechanize, cgi
 
         # create browser
